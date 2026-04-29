@@ -1,8 +1,8 @@
 # UrbanAlign
 
-> Few-Shot Urban Perception via Semantic Feature Distillation and Hybrid Visual Relationship Mapping
+> Post-hoc Semantic Calibration for VLM-Human Preference Alignment
 
-UrbanAlign is a **training-free framework** that synthesizes interpretable urban perception data from minimal crowdsourced annotations. It elicits domain-specific perception capabilities from Vision-Language Models (VLMs) through a three-stage post-processing pipeline — no fine-tuning, no GPU training required.
+UrbanAlign is a **training-free framework** that synthesizes interpretable urban perception data from minimal crowdsourced annotations. It elicits domain-specific perception capabilities from Vision-Language Models (VLMs) through a three-stage post-processing pipeline.
 
 Given a small set of pairwise comparisons (e.g., *"Which scene looks safer?"*), UrbanAlign produces dimension-level perception scores across six categories: **safety, beauty, liveliness, wealth, boringness, and depressingness**.
 
@@ -158,8 +158,8 @@ Edit `urbanalign/config.py` or set via environment variables:
 
 ```bibtex
 @article{zhang2026urbanalign,
-  title   = {UrbanAlign: Few-Shot Urban Perception via Semantic Feature
-             Distillation and Hybrid Visual Relationship Mapping},
+  title   = {UrbanAlign: Post-hoc Semantic Calibration for
+             VLM-Human Preference Alignment},
   author  = {Zhang, Yecheng and others},
   year    = {2026}
 }
