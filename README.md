@@ -1,71 +1,79 @@
-# UrbanAlign: Few-Shot Urban Perception via Semantic Feature Distillation
+# UrbanAlign
 
-> Synthesizing high-fidelity, interpretable urban perception data from minimal crowdsourced annotations.
+> Few-Shot Urban Perception via Semantic Feature Distillation and Hybrid Visual Relationship Mapping
 
-**Paper**: *UrbanAlign: Few-Shot Urban Perception via Semantic Feature Distillation and Hybrid Visual Relationship Mapping* (ECCV 2026)
+UrbanAlign is a **training-free framework** that synthesizes interpretable urban perception data from minimal crowdsourced annotations. It elicits domain-specific perception capabilities from Vision-Language Models (VLMs) through a three-stage post-processing pipeline — no fine-tuning, no GPU training required.
+
+Given a small set of pairwise comparisons (e.g., *"Which scene looks safer?"*), UrbanAlign produces dimension-level perception scores across six categories: **safety, beauty, liveliness, wealth, boringness, and depressingness**.
+
+<p align="center">
+  <img src="assets/framework.pdf" width="90%">
+</p>
 
 ---
 
-## Overview
+## Method
 
-UrbanAlign is a training-free framework that elicits domain-specific urban perception capabilities from Vision-Language Models (VLMs) through a three-stage post-processing pipeline. Given only a small set of crowdsourced pairwise comparisons (e.g., "Which scene looks safer?"), UrbanAlign synthesizes perception scores across six perceptual dimensions — **safety, beauty, liveliness, wealth, boringness, and depressingness** — with interpretable, dimension-level explanations.
+### Stage 1 — Semantic Dimension Extraction
 
-### Key Contributions
+Using TrueSkill-stratified consensus samples, the VLM discovers 5-8 universal evaluation dimensions (e.g., *Facade Quality*, *Vegetation Coverage*, *Infrastructure Condition*) with operational definitions — replacing hand-crafted rules with transferable, interpretable dimensions.
 
-1. **Semantic Dimension Extraction** — Automatically discovers 5-8 universal evaluation dimensions (e.g., Facade Quality, Vegetation Coverage) from a handful of consensus samples, replacing hand-crafted rules with transferable, interpretable dimensions.
+### Stage 2 — Multi-Agent Feature Distillation
 
-2. **Multi-Agent Feature Distillation** — An Observer-Debater-Judge deliberation pipeline that mitigates VLM confirmation bias through progressive reasoning and self-consistency verification.
+For each image pair, three VLM agents collaborate through deliberation:
 
-3. **Hybrid Embedding Space & LWRR Alignment** — Fuses CLIP visual features with LLM semantic scores, then calibrates synthetic judgments against human ground truth via Locally Weighted Ridge Regression.
+- **Observer** — Describes visual evidence without premature judgment
+- **Debater** — Argues opposing perspectives to reduce confirmation bias
+- **Judge** — Synthesizes a final dimension-level score (1-10)
 
-### Results
+### Stage 3 — Hybrid VRM + LWRR Alignment
+
+Constructs a hybrid embedding space (CLIP visual features + LLM semantic scores), then calibrates synthetic judgments against human ground truth via Locally Weighted Ridge Regression.
+
+---
+
+## Results
 
 | Metric | Value |
 |--------|-------|
 | Average accuracy (6 categories) | 61.3% |
-| Best category (wealthy) | 72.3% |
-| Improvement over zero-shot VLM | +17.9 pp |
+| Best single category (wealthy) | 72.3% |
+| Gain over zero-shot VLM baseline | +17.9 pp |
 | LWRR calibration gain | +7.0 pp |
-| Cost reduction vs. full annotation | 97% ($167K -> $4.5K) |
+| Cost reduction vs. full human annotation | 97% |
 
 ---
 
 ## Project Structure
 
 ```
-.
-├── config.py                              # Global configuration (API, paths, hyperparams)
-├── requirements.txt                       # Python dependencies
-├── .env.example                           # Environment variable template
-│
-├── abc_preprocess0_extract_clip_features.py   # [Optional] Extract CLIP embeddings
-├── abc_preprocess1_human_choices_dataset.py   # Preprocess Place Pulse 2.0 annotations
-├── abc_preprocess2_human_choices_check.py     # Validate filtered annotations
-├── abc_preprocess3_human_choice_trueskill.py  # Compute TrueSkill ratings
-│
-├── abc_stage1_semantic_extractor.py       # Stage 1: Semantic dimension extraction
-├── abc_stage2_multi_mode_synthesis.py     # Stage 2: Multi-agent feature distillation
-├── abc_stage3_hybrid_vrm.py              # Stage 3: Hybrid VRM + LWRR alignment
-├── abc_stage4_comprehensive_evaluation.py # Stage 4: Evaluation against human labels
-├── abc_stage5_sensitivity_analysis.py     # Stage 5: Hyperparameter sensitivity
-├── abc_stage6_e2e_dimension_optimization.py # Stage 6: End-to-end dimension search
-├── abc_stage7_traditional_baselines.py    # Stage 7: Baseline comparisons
-├── abc_stage8_results_summary.py          # Stage 8: Results aggregation for paper
-│
-├── abc_stage2_auto_all_modes.py           # Helper: run all Stage 2 modes sequentially
-├── abc_specs_transfer_experiment.py       # Cross-dataset transfer to SPECS
-├── generate_paper_figures.py              # Generate figures for paper
-│
-├── ECCV_2026_Paper_Template/              # LaTeX paper source
-│   ├── main.tex                           # Main paper
-│   ├── supplementary.tex                  # Supplementary material
-│   ├── main.bib                           # References
-│   └── fig_*.pdf                          # Paper figures
-│
-└── archive/                               # Legacy code and paper drafts
-    ├── legacy_1.0/                        # UrbanAlign 1.0 (rule-based) scripts
-    ├── paper_drafts/                      # Early paper versions
-    └── temp_scripts/                      # One-off analysis scripts
+UrbanAlign/
+├── urbanalign/                          # Core package
+│   ├── config.py                        # Global configuration (API, paths, hyperparams)
+│   ├── preprocessing/
+│   │   ├── extract_clip_features.py     # [Optional] CLIP embedding extraction
+│   │   ├── prepare_dataset.py           # Filter & analyze Place Pulse annotations
+│   │   ├── validate_data.py             # Data quality checks
+│   │   └── compute_trueskill.py         # TrueSkill rating computation
+│   ├── pipeline/
+│   │   ├── stage1_semantic_extractor.py # Semantic dimension discovery
+│   │   ├── stage2_multi_agent_synthesis.py  # Multi-agent VLM scoring
+│   │   └── stage3_hybrid_vrm.py         # LWRR calibration & alignment
+│   ├── evaluation/
+│   │   ├── evaluate.py                  # Accuracy & kappa evaluation
+│   │   ├── sensitivity_analysis.py      # Hyperparameter sensitivity
+│   │   ├── dimension_optimization.py    # End-to-end dimension search
+│   │   └── results_summary.py           # Result table generation
+│   └── baselines/
+│       └── traditional_baselines.py     # Siamese / Segmentation / Zero-shot baselines
+├── scripts/
+│   ├── run_all_modes.py                 # Run all Stage 2 modes sequentially
+│   ├── specs_transfer_experiment.py     # Cross-dataset transfer to SPECS
+│   └── generate_figures.py              # Generate paper figures
+├── assets/                              # Framework diagrams
+├── requirements.txt
+├── .env.example
+└── .gitignore
 ```
 
 ---
@@ -85,25 +93,20 @@ pip install torch transformers
 
 ### 2. Configure environment
 
-Copy `.env.example` to `.env` and fill in your values:
-
 ```bash
 cp .env.example .env
 ```
 
-Required variables:
+Fill in your `.env`:
 - `URBANALIGN_API_KEY` — API key for the VLM service
 - `PLACE_PULSE_DIR` — Path to the [Place Pulse 2.0](http://pulse.media.mit.edu/) dataset
 
-### 3. Prepare data
-
-Download the Place Pulse 2.0 dataset and set `PLACE_PULSE_DIR` to its root. Expected structure:
-
+Expected data layout:
 ```
 <PLACE_PULSE_DIR>/
-├── final_data_reliable_agg_N3.csv    # Aggregated pairwise annotations
-├── final_data_reliable_raw_N3.csv    # Raw individual annotations
-└── final_photo_dataset/              # Street-view images
+├── final_data_reliable_agg_N3.csv
+├── final_data_reliable_raw_N3.csv
+└── final_photo_dataset/
 ```
 
 ---
@@ -113,34 +116,33 @@ Download the Place Pulse 2.0 dataset and set `PLACE_PULSE_DIR` to its root. Expe
 ### Preprocessing (run once)
 
 ```bash
-python abc_preprocess0_extract_clip_features.py   # Extract CLIP features (optional)
-python abc_preprocess1_human_choices_dataset.py    # Filter & analyze annotations
-python abc_preprocess3_human_choice_trueskill.py   # Compute TrueSkill ratings
+python -m urbanalign.preprocessing.extract_clip_features    # Optional
+python -m urbanalign.preprocessing.prepare_dataset
+python -m urbanalign.preprocessing.compute_trueskill
 ```
 
-### Main pipeline
+### Core pipeline
 
 ```bash
-python abc_stage1_semantic_extractor.py        # Extract semantic dimensions
-python abc_stage2_multi_mode_synthesis.py       # Score image pairs (Mode 4 = multi-agent)
-python abc_stage3_hybrid_vrm.py                # LWRR calibration
-python abc_stage4_comprehensive_evaluation.py  # Evaluate accuracy & kappa
+python -m urbanalign.pipeline.stage1_semantic_extractor
+python -m urbanalign.pipeline.stage2_multi_agent_synthesis
+python -m urbanalign.pipeline.stage3_hybrid_vrm
 ```
 
-### Analysis & ablations
+### Evaluation
 
 ```bash
-python abc_stage5_sensitivity_analysis.py          # Hyperparameter sensitivity
-python abc_stage6_e2e_dimension_optimization.py    # Dimension set optimization
-python abc_stage7_traditional_baselines.py         # Run baseline methods
-python abc_stage8_results_summary.py               # Generate result tables
+python -m urbanalign.evaluation.evaluate
+python -m urbanalign.evaluation.sensitivity_analysis
+python -m urbanalign.baselines.traditional_baselines
+python -m urbanalign.evaluation.results_summary
 ```
 
 All outputs are saved to `urbanalign_outputs/` (auto-created, gitignored).
 
-### Configuration
+### Key configuration
 
-Key parameters in `config.py`:
+Edit `urbanalign/config.py` or set via environment variables:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
@@ -152,32 +154,14 @@ Key parameters in `config.py`:
 
 ---
 
-## Method
-
-<p align="center">
-  <img src="ECCV_2026_Paper_Template/fig_framework.pdf" width="90%">
-</p>
-
-**Stage 1 — Semantic Dimension Extraction**: Using TrueSkill-stratified consensus samples, the VLM identifies universal evaluation dimensions (e.g., *Facade Quality*, *Infrastructure Condition*) with operational definitions.
-
-**Stage 2 — Multi-Agent Feature Distillation**: For each image pair, three VLM agents collaborate:
-- **Observer**: Describes visual evidence without judgment
-- **Debater**: Argues opposing perspectives
-- **Judge**: Synthesizes a final dimension-level score (1-10)
-
-**Stage 3 — Hybrid VRM + LWRR**: Constructs a hybrid embedding (CLIP visual + semantic scores), then aligns synthetic judgments to human ground truth via Locally Weighted Ridge Regression in this joint space.
-
----
-
 ## Citation
 
 ```bibtex
-@inproceedings{zhang2026urbanalign,
-  title     = {UrbanAlign: Few-Shot Urban Perception via Semantic Feature
-               Distillation and Hybrid Visual Relationship Mapping},
-  author    = {Zhang, Yecheng and others},
-  booktitle = {European Conference on Computer Vision (ECCV)},
-  year      = {2026}
+@article{zhang2026urbanalign,
+  title   = {UrbanAlign: Few-Shot Urban Perception via Semantic Feature
+             Distillation and Hybrid Visual Relationship Mapping},
+  author  = {Zhang, Yecheng and others},
+  year    = {2026}
 }
 ```
 

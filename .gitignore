@@ -1,5 +1,5 @@
 # ============================================================
-# UrbanAlign 2.0 — .gitignore
+# UrbanAlign — .gitignore
 # ============================================================
 
 # ---------- Python ----------
@@ -12,7 +12,6 @@ build/
 *.egg
 
 # ---------- Virtual environments ----------
-AI4DATA/
 .venv/
 venv/
 env/
@@ -40,52 +39,6 @@ specs_outputs/
 *.h5
 *.pt
 *.pth
-
-# ---------- Reference papers (PDFs, too large for git) ----------
-参考文献/
-参考代码/
-
-# ---------- LaTeX build artifacts ----------
-*.aux
-*.bbl
-*.blg
-*.brf
-*.log
-*.out
-*.fls
-*.fdb_latexmk
-*.synctex.gz
-texput.*
-compile.log
-
-# ---------- Arxiv submission bundle ----------
-arxiv/
-arxiv.zip
-arxiv.pdf
-
-# ---------- Paper compilation PDFs (keep source .tex, not compiled) ----------
-ECCV_2026_Paper_Template/*.pdf
-!ECCV_2026_Paper_Template/fig_*.pdf
-!ECCV_2026_Paper_Template/human_*.pdf
-!ECCV_2026_Paper_Template/eijkel2.pdf
-
-# ---------- Internal project docs (not for public repo) ----------
-CLAUDE.md
-ECCV_2026_PAPER_CHINESE*.md
-思路.txt
-
-# ---------- Text extraction artifacts ----------
-ECCV_2026_Paper_Template/_page*.txt
-ECCV_2026_Paper_Template/abstract.txt
-ECCV_2026_Paper_Template/main_text.txt
-
-# ---------- Misc ----------
-worktrees/
-*.docx
-*.zip
-aiusv3.pdf
-history/
-.claude/
 
 # ---------- OS ----------
 .DS_Store
