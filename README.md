@@ -167,4 +167,4 @@ Edit `urbanalign/config.py` or set via environment variables:
 
 ## License
 
-This project is for academic and research purposes only.
+[MIT License](LICENSE)
