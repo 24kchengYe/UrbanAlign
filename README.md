@@ -2,9 +2,9 @@
 
 > Post-hoc Semantic Calibration for VLM-Human Preference Alignment
 
-UrbanAlign is a **training-free framework** that synthesizes interpretable urban perception data from minimal crowdsourced annotations. It elicits domain-specific perception capabilities from Vision-Language Models (VLMs) through a three-stage post-processing pipeline.
+UrbanAlign is a **training-free post-hoc calibration framework** that aligns VLM outputs with human subjective preferences using minimal crowdsourced annotations. Through semantic dimension discovery, multi-agent deliberation, and hybrid-space calibration, it bridges the gap between VLM zero-shot judgments and human ground truth — without any model fine-tuning.
 
-Given a small set of pairwise comparisons (e.g., *"Which scene looks safer?"*), UrbanAlign produces dimension-level perception scores across six categories: **safety, beauty, liveliness, wealth, boringness, and depressingness**.
+While demonstrated on **urban scene perception** (safety, beauty, liveliness, wealth, boringness, depressingness) using the Place Pulse 2.0 dataset, the framework is **domain-agnostic**: it applies to any pairwise preference task where VLMs can observe and humans can judge — food quality, interior design, landscape aesthetics, product appeal, and beyond. The core idea is general: *extract interpretable evaluation dimensions from a few human-consensus examples, then use them to calibrate VLM scoring at scale*.
 
 <p align="center">
   <img src="assets/framework.pdf" width="90%">
